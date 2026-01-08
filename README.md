@@ -1,4 +1,4 @@
-# 🔐 CTF API Penetration Testing Framework
+# 🔐  API Penetration Testing Framework
 
 Complete automation framework for API security testing, vulnerability detection, and exploitation.
 
