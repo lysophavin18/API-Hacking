@@ -43,7 +43,7 @@ This framework provides automated penetration testing capabilities covering **10
 
 ```bash
 # Clone or navigate to project
-cd CTF_API_Pentest
+cd API-Hacking
 
 # Install Python dependencies
 pip3 install -r requirements.txt
