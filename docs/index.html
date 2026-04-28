@@ -405,11 +405,11 @@
 
 <!-- ───────────────────── STATS ───────────────────────────────────── -->
 <div class="stats">
-  <div class="stat"><span class="stat-num" data-target="10">0</span><span class="stat-label">Attack Categories</span></div>
-  <div class="stat"><span class="stat-num" data-target="40">0</span><span class="stat-label">Integrated Tools</span></div>
-  <div class="stat"><span class="stat-num" data-target="150">0</span><span class="stat-label">Test Methods</span></div>
-  <div class="stat"><span class="stat-num" data-target="100">0</span><span class="stat-label">% OWASP Coverage</span></div>
-  <div class="stat"><span class="stat-num" data-target="20">0</span><span class="stat-label">Attack Workflows</span></div>
+  <div class="stat"><span class="stat-num" data-target="10" data-suffix="+">0</span><span class="stat-label">Attack Categories</span></div>
+  <div class="stat"><span class="stat-num" data-target="40" data-suffix="+">0</span><span class="stat-label">Integrated Tools</span></div>
+  <div class="stat"><span class="stat-num" data-target="150" data-suffix="+">0</span><span class="stat-label">Test Methods</span></div>
+  <div class="stat"><span class="stat-num" data-target="100" data-suffix="%">0</span><span class="stat-label">OWASP Coverage</span></div>
+  <div class="stat"><span class="stat-num" data-target="20" data-suffix="+">0</span><span class="stat-label">Attack Workflows</span></div>
 </div>
 
 <!-- ───────────────────── ATTACK CATEGORIES ───────────────────────── -->
@@ -637,11 +637,11 @@ xxe_payloads <span style="color:#8b949e">=</span> PayloadGenerator.xxe_payloads(
         <textarea id="contact-msg" placeholder="Ask a question, report a bug, or suggest a feature…"></textarea>
       </div>
       <p class="form-note">
-        ℹ️ This will open your default email client pre-filled with your message,
-        or you can <a href="https://github.com/lysophavin18/API-Hacking/issues/new" target="_blank">open a GitHub Issue</a> instead.
+        ℹ️ This will open a pre-filled GitHub Issue with your message so the author can respond publicly.
+        You can also <a href="https://github.com/lysophavin18/API-Hacking/issues/new" target="_blank">open an issue directly</a>.
       </p>
       <button class="form-submit" onclick="submitContact()">Send Message</button>
-      <div id="form-success">✅ Opening your email client… if nothing happens, please open a GitHub Issue instead.</div>
+      <div id="form-success">✅ Opening GitHub Issues with your message pre-filled…</div>
     </div>
   </div>
 </section>
@@ -790,12 +790,12 @@ function copyCode(btn) {
 function animateCounters() {
   document.querySelectorAll('[data-target]').forEach(el => {
     const target = +el.dataset.target;
-    const suffix = el.dataset.target === '100' ? '' : '+';
+    const suffix = el.dataset.suffix || '';
     const step = Math.ceil(target / 40);
     let cur = 0;
     const timer = setInterval(() => {
       cur = Math.min(cur + step, target);
-      el.textContent = cur + (cur === target && el.textContent.includes('%') ? '%' : (cur === target ? suffix : ''));
+      el.textContent = cur + (cur === target ? suffix : '');
       if (cur >= target) clearInterval(timer);
     }, 35);
   });
@@ -820,7 +820,7 @@ function submitContact() {
     (email ? 'Email: ' + email + '\n' : '') +
     '\n' + msg
   );
-  window.location.href = `mailto:lysophavin18@github.com?subject=${subject}&body=${body}`;
+  window.location.href = `https://github.com/lysophavin18/API-Hacking/issues/new?title=${subject}&body=${body}`;
   document.getElementById('form-success').style.display = 'block';
 }
 </script>
