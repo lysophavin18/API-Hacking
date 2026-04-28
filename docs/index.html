@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Hacking Framework — API Penetration Testing Tool</title>
+  <meta name="description" content="Complete automation framework for API security testing, vulnerability detection, and exploitation. Covers all OWASP Top 10 API categories." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:        #0d1117;
+      --bg2:       #161b22;
+      --bg3:       #21262d;
+      --border:    #30363d;
+      --accent:    #58a6ff;
+      --accent2:   #f78166;
+      --accent3:   #3fb950;
+      --accent4:   #d2a8ff;
+      --text:      #c9d1d9;
+      --text-dim:  #8b949e;
+      --text-head: #f0f6fc;
+      --radius:    10px;
+      --shadow:    0 8px 32px rgba(0,0,0,.45);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, .mono {
+      font-family: 'Fira Code', monospace;
+      font-size: .875em;
+    }
+
+    /* ── Nav ──────────────────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13,17,23,.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-brand {
+      font-weight: 700; font-size: 1.1rem;
+      color: var(--text-head);
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .nav-brand span { color: var(--accent); }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a { color: var(--text-dim); font-size: .9rem; transition: color .2s; }
+    .nav-links a:hover { color: var(--text-head); text-decoration: none; }
+    .nav-btn {
+      background: var(--accent); color: #0d1117;
+      padding: .4rem 1rem; border-radius: 6px;
+      font-size: .85rem; font-weight: 600;
+      transition: opacity .2s;
+    }
+    .nav-btn:hover { opacity: .85; text-decoration: none; }
+
+    /* ── Hero ─────────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 6rem 2rem 5rem;
+      text-align: center;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(88,166,255,.18), transparent),
+        radial-gradient(ellipse 50% 40% at 80% 60%, rgba(63,185,80,.1), transparent),
+        radial-gradient(ellipse 50% 40% at 20% 60%, rgba(210,168,255,.08), transparent);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(88,166,255,.12);
+      border: 1px solid rgba(88,166,255,.3);
+      color: var(--accent);
+      font-size: .78rem; font-weight: 600;
+      padding: .25rem .85rem; border-radius: 99px;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase; letter-spacing: .08em;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 800;
+      color: var(--text-head);
+      line-height: 1.2;
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--accent), var(--accent4));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      max-width: 640px; margin: 0 auto 2.5rem;
+      font-size: 1.1rem; color: var(--text-dim);
+    }
+    .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: .45rem;
+      padding: .7rem 1.5rem; border-radius: 8px;
+      font-size: .95rem; font-weight: 600;
+      cursor: pointer; border: none;
+      transition: transform .15s, opacity .15s;
+    }
+    .btn:hover { transform: translateY(-2px); opacity: .9; text-decoration: none; }
+    .btn-primary { background: var(--accent); color: #0d1117; }
+    .btn-secondary {
+      background: var(--bg3);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Stats ────────────────────────────────────────────────────── */
+    .stats {
+      display: flex; flex-wrap: wrap; gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stat {
+      flex: 1; min-width: 150px;
+      background: var(--bg);
+      padding: 1.75rem 1rem;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 2.2rem; font-weight: 800;
+      color: var(--accent); display: block;
+    }
+    .stat-label { font-size: .82rem; color: var(--text-dim); margin-top: .2rem; }
+
+    /* ── Section Wrapper ──────────────────────────────────────────── */
+    .section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
+    .section-title {
+      font-size: 1.65rem; font-weight: 700;
+      color: var(--text-head); margin-bottom: .5rem;
+    }
+    .section-sub { color: var(--text-dim); margin-bottom: 2.5rem; font-size: .95rem; }
+
+    /* ── Attack Categories Grid ───────────────────────────────────── */
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    .cat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.5rem;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+      cursor: default;
+    }
+    .cat-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+    .cat-header { display: flex; align-items: center; gap: .65rem; margin-bottom: .75rem; }
+    .cat-num {
+      font-size: .72rem; font-weight: 700;
+      background: rgba(88,166,255,.15);
+      color: var(--accent);
+      border: 1px solid rgba(88,166,255,.3);
+      padding: .15rem .5rem; border-radius: 4px;
+      white-space: nowrap;
+    }
+    .cat-icon { font-size: 1.4rem; }
+    .cat-title { font-weight: 600; color: var(--text-head); font-size: 1rem; }
+    .cat-desc { font-size: .875rem; color: var(--text-dim); margin-bottom: .85rem; }
+    .cat-tags { display: flex; flex-wrap: wrap; gap: .35rem; }
+    .tag {
+      font-size: .72rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: .15rem .55rem; border-radius: 99px;
+    }
+
+    /* ── Filter bar ───────────────────────────────────────────────── */
+    .search-bar {
+      display: flex; gap: .75rem; margin-bottom: 1.5rem; align-items: center;
+    }
+    .search-input {
+      flex: 1; max-width: 380px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: inherit; font-size: .9rem;
+      padding: .55rem 1rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: var(--text-dim); }
+
+    /* ── Quick Start ──────────────────────────────────────────────── */
+    .tabs { display: flex; gap: 0; margin-bottom: 1rem; border-bottom: 1px solid var(--border); }
+    .tab-btn {
+      padding: .6rem 1.2rem; cursor: pointer;
+      background: none; border: none;
+      color: var(--text-dim); font-family: inherit; font-size: .9rem;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: color .2s, border-color .2s;
+    }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-btn:hover { color: var(--text); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .code-block {
+      position: relative;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.5rem;
+      overflow-x: auto;
+    }
+    .code-block pre { color: var(--text); font-family: 'Fira Code', monospace; font-size: .85rem; white-space: pre; }
+    .copy-btn {
+      position: absolute; top: .75rem; right: .75rem;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text-dim); font-size: .75rem; font-family: inherit;
+      padding: .25rem .7rem; border-radius: 5px; cursor: pointer;
+      transition: color .2s, border-color .2s;
+    }
+    .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .copy-btn.copied { color: var(--accent3); border-color: var(--accent3); }
+
+    /* ── OWASP Table ──────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: var(--bg3); }
+    th { padding: .75rem 1rem; text-align: left; font-size: .82rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: .05em; }
+    td { padding: .8rem 1rem; border-top: 1px solid var(--border); font-size: .875rem; vertical-align: top; }
+    tr:hover td { background: rgba(88,166,255,.04); }
+    .owasp-id { font-family: 'Fira Code', monospace; color: var(--accent4); font-size: .8rem; }
+    .severity-badge {
+      display: inline-block;
+      padding: .15rem .55rem; border-radius: 99px;
+      font-size: .72rem; font-weight: 600;
+    }
+    .sev-critical { background: rgba(247,129,102,.15); color: #f78166; border: 1px solid rgba(247,129,102,.3); }
+    .sev-high     { background: rgba(255,163,72,.15);  color: #ffa348; border: 1px solid rgba(255,163,72,.3); }
+    .sev-medium   { background: rgba(255,212,0,.12);   color: #f0c000; border: 1px solid rgba(255,212,0,.25); }
+
+    /* ── Features Grid ────────────────────────────────────────────── */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+    .feature-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.4rem;
+    }
+    .feature-icon { font-size: 1.8rem; margin-bottom: .6rem; }
+    .feature-title { font-weight: 600; color: var(--text-head); margin-bottom: .4rem; }
+    .feature-desc { font-size: .875rem; color: var(--text-dim); }
+
+    /* ── Author Section ───────────────────────────────────────────── */
+    .author-section {
+      background: linear-gradient(135deg, rgba(88,166,255,.07), rgba(210,168,255,.06));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 3.5rem 2.5rem;
+      text-align: center;
+    }
+    .author-avatar {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      border: 3px solid var(--accent);
+      margin: 0 auto 1.5rem;
+      object-fit: cover;
+      display: block;
+    }
+    .author-name { font-size: 1.5rem; font-weight: 700; color: var(--text-head); margin-bottom: .3rem; }
+    .author-handle { color: var(--accent); font-size: .9rem; margin-bottom: 1rem; }
+    .author-bio { max-width: 520px; margin: 0 auto 2rem; color: var(--text-dim); font-size: .95rem; }
+    .author-links { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+    .author-link {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text); padding: .55rem 1.15rem; border-radius: 8px;
+      font-size: .875rem; font-weight: 500;
+      transition: border-color .2s, color .2s;
+    }
+    .author-link:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+    .author-link svg { width: 18px; height: 18px; }
+
+    /* Contact form */
+    .contact-form {
+      max-width: 520px; margin: 2.5rem auto 0;
+      text-align: left;
+    }
+    .contact-form h3 { color: var(--text-head); font-size: 1.05rem; margin-bottom: 1rem; text-align: center; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: .82rem; color: var(--text-dim); margin-bottom: .35rem; }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text);
+      font-family: inherit; font-size: .9rem;
+      padding: .65rem 1rem; outline: none;
+      transition: border-color .2s;
+    }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+    .form-group input:focus,
+    .form-group textarea:focus { border-color: var(--accent); }
+    .form-note { font-size: .78rem; color: var(--text-dim); margin-top: .4rem; }
+    .form-submit {
+      width: 100%; background: var(--accent); color: #0d1117;
+      border: none; border-radius: 8px;
+      padding: .75rem; font-size: .95rem; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      transition: opacity .2s;
+    }
+    .form-submit:hover { opacity: .88; }
+    #form-success {
+      display: none;
+      background: rgba(63,185,80,.12); border: 1px solid rgba(63,185,80,.35);
+      color: var(--accent3); border-radius: 8px;
+      padding: .85rem 1rem; text-align: center; font-size: .9rem;
+      margin-top: 1rem;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      color: var(--text-dim); font-size: .85rem;
+    }
+    footer a { color: var(--text-dim); }
+    footer a:hover { color: var(--accent); }
+
+    /* ── Scrollbar ────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+    /* ── Responsive ───────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero { padding: 4rem 1.25rem 3.5rem; }
+      .section { padding: 3.5rem 1.25rem; }
+      .author-section { padding: 2.5rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ───────────────────── NAV ─────────────────────────────────────── -->
+<nav>
+  <div class="nav-brand">
+    <span>⚡</span> API-Hacking <span>Framework</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#categories">Categories</a></li>
+    <li><a href="#quickstart">Quick Start</a></li>
+    <li><a href="#owasp">OWASP Mapping</a></li>
+    <li><a href="#author">Author</a></li>
+  </ul>
+  <a href="https://github.com/lysophavin18/API-Hacking" target="_blank" class="nav-btn">
+    ★ GitHub
+  </a>
+</nav>
+
+<!-- ───────────────────── HERO ────────────────────────────────────── -->
+<header class="hero">
+  <div class="hero-badge">🔐 Security Research Tool</div>
+  <h1>The Complete<br /><em>API Penetration Testing</em><br />Framework</h1>
+  <p>
+    Automate API security testing across <strong>10 OWASP-mapped attack categories</strong>
+    with 40+ integrated tools — from discovery to exploitation to reporting.
+  </p>
+  <div class="hero-actions">
+    <a href="#quickstart" class="btn btn-primary">
+      🚀 Get Started
+    </a>
+    <a href="https://github.com/lysophavin18/API-Hacking" target="_blank" class="btn btn-secondary">
+      View on GitHub
+    </a>
+  </div>
+</header>
+
+<!-- ───────────────────── STATS ───────────────────────────────────── -->
+<div class="stats">
+  <div class="stat"><span class="stat-num" data-target="10">0</span><span class="stat-label">Attack Categories</span></div>
+  <div class="stat"><span class="stat-num" data-target="40">0</span><span class="stat-label">Integrated Tools</span></div>
+  <div class="stat"><span class="stat-num" data-target="150">0</span><span class="stat-label">Test Methods</span></div>
+  <div class="stat"><span class="stat-num" data-target="100">0</span><span class="stat-label">% OWASP Coverage</span></div>
+  <div class="stat"><span class="stat-num" data-target="20">0</span><span class="stat-label">Attack Workflows</span></div>
+</div>
+
+<!-- ───────────────────── ATTACK CATEGORIES ───────────────────────── -->
+<section class="section" id="categories">
+  <h2 class="section-title">⚔️ 10 Attack Categories</h2>
+  <p class="section-sub">Complete coverage of the OWASP API Security Top 10.</p>
+  <div class="search-bar">
+    <input
+      type="search"
+      class="search-input"
+      id="cat-search"
+      placeholder="Filter categories…"
+      aria-label="Filter attack categories"
+    />
+  </div>
+  <div class="categories-grid" id="categories-grid">
+    <!-- Cards injected by JS -->
+  </div>
+</section>
+
+<!-- ───────────────────── KEY FEATURES ───────────────────────────── -->
+<section style="background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="section">
+    <h2 class="section-title">✨ Key Features</h2>
+    <p class="section-sub">Everything you need for a professional API security engagement.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-title">Intelligent Routing</div>
+        <div class="feature-desc">Automatically selects the right attack modules based on the API type (REST, GraphQL, SOAP).</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Detailed Reports</div>
+        <div class="feature-desc">Generates JSON + Markdown reports with OWASP mapping, risk scoring, and remediation guidance.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔗</div>
+        <div class="feature-title">40+ Integrated Tools</div>
+        <div class="feature-desc">Works alongside ffuf, sqlmap, mitmproxy, jwt-tool, gobuster, locust, and many more.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚙️</div>
+        <div class="feature-title">Workflow Automation</div>
+        <div class="feature-desc">Pre-built attack workflows run 10 phases end-to-end with a single command.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <div class="feature-title">OWASP-Mapped</div>
+        <div class="feature-desc">Every test maps directly to the OWASP API Security Top 10 for compliance reporting.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔌</div>
+        <div class="feature-title">Modular Design</div>
+        <div class="feature-desc">Run the full suite or pick individual modules. Easily extensible with new attack classes.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────── QUICK START ─────────────────────────────── -->
+<section class="section" id="quickstart">
+  <h2 class="section-title">🚀 Quick Start</h2>
+  <p class="section-sub">Get up and running in minutes.</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="install">Installation</button>
+    <button class="tab-btn" data-tab="basic">Basic Usage</button>
+    <button class="tab-btn" data-tab="advanced">Advanced</button>
+    <button class="tab-btn" data-tab="python">Python API</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-install">
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre><span style="color:#8b949e"># 1. Clone the repository</span>
+git clone https://github.com/lysophavin18/API-Hacking.git
+cd API-Hacking
+
+<span style="color:#8b949e"># 2. Install Python dependencies</span>
+pip3 install -r requirements.txt
+
+<span style="color:#8b949e"># 3. Install system tools (optional — enhances testing)</span>
+bash install_dependencies.sh
+
+<span style="color:#8b949e"># 4. Verify installation</span>
+python3 test_installation.py</pre>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-basic">
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre><span style="color:#8b949e"># Full 10-category pentest</span>
+python3 api_pentest_orchestrator.py http://api.target.com
+
+<span style="color:#8b949e"># With authentication token</span>
+python3 api_pentest_orchestrator.py http://api.target.com \
+  --token YOUR_JWT_TOKEN
+
+<span style="color:#8b949e"># Custom output directory</span>
+python3 api_pentest_orchestrator.py http://api.target.com \
+  --output ./results_$(date +%Y%m%d)
+
+<span style="color:#8b949e"># Verbose debug output</span>
+python3 api_pentest_orchestrator.py http://api.target.com --verbose</pre>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-advanced">
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre><span style="color:#8b949e"># Combine all options</span>
+python3 api_pentest_orchestrator.py https://api.target.com \
+  --token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9... \
+  --output ./results_$(date +%Y%m%d_%H%M%S) \
+  --verbose
+
+<span style="color:#8b949e"># View the structured report</span>
+cat results/pentest_report.json | python3 -c "
+import json,sys
+r=json.load(sys.stdin)
+print('Risk Level:', r['summary']['risk_level'])
+print('Total Vulns:', r['summary']['total_vulnerabilities'])
+"
+
+<span style="color:#8b949e"># View executive summary</span>
+cat results/pentest_summary.md</pre>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-python">
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre><span style="color:#8b949e"># Full scan via Python API</span>
+<span style="color:#f78166">from</span> workflows.auto_pentest <span style="color:#f78166">import</span> AutoPentest
+
+pentest <span style="color:#8b949e">=</span> AutoPentest(<span style="color:#a5d6ff">"http://api.target.com"</span>, token=<span style="color:#a5d6ff">"token"</span>)
+results <span style="color:#8b949e">=</span> pentest.run_full_scan()
+report  <span style="color:#8b949e">=</span> pentest.generate_report()
+
+<span style="color:#8b949e"># Single category</span>
+<span style="color:#f78166">from</span> modules.authentication_attacks <span style="color:#f78166">import</span> AuthenticationAttackAnalyzer
+
+auth    <span style="color:#8b949e">=</span> AuthenticationAttackAnalyzer(<span style="color:#a5d6ff">"http://api.target.com"</span>)
+results <span style="color:#8b949e">=</span> auth.analyze()
+
+<span style="color:#8b949e"># Payload generation only</span>
+<span style="color:#f78166">from</span> utils.request_builder <span style="color:#f78166">import</span> PayloadGenerator
+
+sql_payloads <span style="color:#8b949e">=</span> PayloadGenerator.sql_injection_payloads()
+jwt_payloads <span style="color:#8b949e">=</span> PayloadGenerator.jwt_payloads()
+xxe_payloads <span style="color:#8b949e">=</span> PayloadGenerator.xxe_payloads()</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────── OWASP TABLE ─────────────────────────────── -->
+<section style="background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="section" id="owasp">
+    <h2 class="section-title">🛡️ OWASP API Top 10 Mapping</h2>
+    <p class="section-sub">Every test is mapped to an OWASP category for compliance-ready reporting.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>OWASP ID</th>
+            <th>Vulnerability</th>
+            <th>Module</th>
+            <th>Severity</th>
+          </tr>
+        </thead>
+        <tbody id="owasp-tbody">
+          <!-- rows from JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────── AUTHOR ──────────────────────────────────── -->
+<section class="section" id="author">
+  <div class="author-section">
+    <img
+      class="author-avatar"
+      src="https://github.com/lysophavin18.png"
+      alt="lysophavin18 GitHub avatar"
+      onerror="this.src='https://avatars.githubusercontent.com/u/0'"
+    />
+    <div class="author-name">lysophavin18</div>
+    <div class="author-handle">@lysophavin18 · GitHub</div>
+    <p class="author-bio">
+      Security researcher and API penetration testing enthusiast.
+      Creator of the API Hacking Framework — an open-source toolkit covering all
+      OWASP API Security Top 10 categories.
+    </p>
+    <div class="author-links">
+      <a href="https://github.com/lysophavin18" target="_blank" class="author-link">
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        GitHub Profile
+      </a>
+      <a href="https://github.com/lysophavin18/API-Hacking" target="_blank" class="author-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        View Repository
+      </a>
+      <a href="https://github.com/lysophavin18/API-Hacking/issues/new" target="_blank" class="author-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Open an Issue
+      </a>
+    </div>
+
+    <!-- Ask the Author form (mailto) -->
+    <div class="contact-form">
+      <h3>💬 Ask the Author</h3>
+      <div class="form-group">
+        <label for="contact-name">Your Name</label>
+        <input type="text" id="contact-name" placeholder="e.g. Jane Smith" />
+      </div>
+      <div class="form-group">
+        <label for="contact-email">Your Email</label>
+        <input type="email" id="contact-email" placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label for="contact-msg">Message / Question</label>
+        <textarea id="contact-msg" placeholder="Ask a question, report a bug, or suggest a feature…"></textarea>
+      </div>
+      <p class="form-note">
+        ℹ️ This will open your default email client pre-filled with your message,
+        or you can <a href="https://github.com/lysophavin18/API-Hacking/issues/new" target="_blank">open a GitHub Issue</a> instead.
+      </p>
+      <button class="form-submit" onclick="submitContact()">Send Message</button>
+      <div id="form-success">✅ Opening your email client… if nothing happens, please open a GitHub Issue instead.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────── FOOTER ──────────────────────────────────── -->
+<footer>
+  <p>
+    Built by <a href="https://github.com/lysophavin18" target="_blank">@lysophavin18</a> ·
+    <a href="https://github.com/lysophavin18/API-Hacking" target="_blank">API-Hacking on GitHub</a> ·
+    For authorized security testing only.
+  </p>
+  <p style="margin-top:.4rem; font-size:.78rem;">
+    ⚠️ Only test APIs you own or have explicit written permission to test. Unauthorized testing is illegal.
+  </p>
+</footer>
+
+<!-- ───────────────────── SCRIPTS ─────────────────────────────────── -->
+<script>
+/* ── Attack categories data ─────────────────────────────────────── */
+const CATEGORIES = [
+  {
+    num: 'API1', icon: '🔍', title: 'Discovery & Enumeration',
+    desc: 'Maps the attack surface before any exploitation — endpoints, methods, versions, specs.',
+    tags: ['Endpoint Fuzzing','Swagger Abuse','Version Detection','Method Enum'],
+  },
+  {
+    num: 'API2', icon: '🔑', title: 'Authentication Attacks',
+    desc: 'Finds weaknesses in authentication: JWT bypass, weak secrets, token replay, OAuth flaws.',
+    tags: ['JWT None Alg','Weak Secrets','Token Replay','OAuth Misconfig'],
+  },
+  {
+    num: 'API3', icon: '🚪', title: 'Authorization (BOLA/BFLA)',
+    desc: 'Tests broken object-level and function-level access control — IDOR, privilege escalation.',
+    tags: ['IDOR','Privilege Escalation','Role Manipulation','Method Override'],
+  },
+  {
+    num: 'API4', icon: '💉', title: 'Injection Attacks',
+    desc: 'Injects malicious data via SQL, NoSQL, command, XPath, LDAP, and XXE injection.',
+    tags: ['SQL Injection','NoSQL Injection','Command Injection','XXE'],
+  },
+  {
+    num: 'API5', icon: '⚡', title: 'Business Logic',
+    desc: 'Exploits workflow flaws: payment bypass, race conditions, coupon abuse, type confusion.',
+    tags: ['Payment Bypass','Race Conditions','Coupon Abuse','Workflow Bypass'],
+  },
+  {
+    num: 'API6', icon: '📦', title: 'Mass Assignment',
+    desc: 'Injects hidden or privileged fields blindly bound to server-side objects.',
+    tags: ['Admin Injection','Hidden Fields','Balance Tampering','Metadata Injection'],
+  },
+  {
+    num: 'API7', icon: '🌊', title: 'Rate Limiting & DoS',
+    desc: 'Tests rate limit enforcement: header bypass, brute force, resource exhaustion.',
+    tags: ['Header Bypass','OTP Brute Force','Resource Exhaustion','Flood'],
+  },
+  {
+    num: 'API8', icon: '🔮', title: 'GraphQL Attacks',
+    desc: 'Exploits GraphQL: schema introspection, field enumeration, complexity DoS.',
+    tags: ['Introspection','Field Enum','Complexity DoS','Auth Bypass'],
+  },
+  {
+    num: 'API9', icon: '📁', title: 'File Upload & Deserialization',
+    desc: 'Tests unsafe file handling: web shells, MIME bypass, path traversal, deserialization.',
+    tags: ['Shell Upload','MIME Bypass','Path Traversal','Null Byte'],
+  },
+  {
+    num: 'API10', icon: '🗝️', title: 'Secrets & Token Abuse',
+    desc: 'Scans for exposed credentials, API keys, cloud secrets, and token privilege escalation.',
+    tags: ['API Key Leakage','Cloud Secrets','Token Reuse','Weak Signing'],
+  },
+];
+
+/* ── OWASP mapping data ─────────────────────────────────────────── */
+const OWASP = [
+  { id: 'API1', vuln: 'Broken Object Level Authorization',  module: 'authorization_attacks',        sev: 'critical' },
+  { id: 'API2', vuln: 'Broken Authentication',              module: 'authentication_attacks',       sev: 'critical' },
+  { id: 'API3', vuln: 'Excessive Data Exposure',            module: 'secrets_token_abuse',          sev: 'high' },
+  { id: 'API4', vuln: 'Lack of Rate Limiting',              module: 'rate_limiting_dos',            sev: 'medium' },
+  { id: 'API5', vuln: 'Broken Function Level Authorization',module: 'authorization_attacks',        sev: 'critical' },
+  { id: 'API6', vuln: 'Mass Assignment',                    module: 'mass_assignment',              sev: 'high' },
+  { id: 'API7', vuln: 'Security Misconfiguration',          module: 'file_upload_deserialization',  sev: 'high' },
+  { id: 'API8', vuln: 'Injection',                          module: 'injection_attacks',            sev: 'critical' },
+  { id: 'API9', vuln: 'Improper Asset Management',          module: 'discovery_enumeration',        sev: 'medium' },
+  { id: 'API10',vuln: 'Insufficient Logging & Monitoring',  module: 'secrets_token_abuse',          sev: 'medium' },
+];
+
+/* ── Render categories ──────────────────────────────────────────── */
+function renderCategories(filter) {
+  const grid = document.getElementById('categories-grid');
+  const lc = (filter || '').toLowerCase();
+  const cards = CATEGORIES.filter(c =>
+    !lc ||
+    c.title.toLowerCase().includes(lc) ||
+    c.desc.toLowerCase().includes(lc) ||
+    c.tags.some(t => t.toLowerCase().includes(lc)) ||
+    c.num.toLowerCase().includes(lc)
+  );
+  grid.innerHTML = cards.map(c => `
+    <div class="cat-card">
+      <div class="cat-header">
+        <span class="cat-num">${c.num}</span>
+        <span class="cat-icon">${c.icon}</span>
+        <span class="cat-title">${c.title}</span>
+      </div>
+      <p class="cat-desc">${c.desc}</p>
+      <div class="cat-tags">${c.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+    </div>
+  `).join('') || '<p style="color:var(--text-dim);grid-column:1/-1">No matching categories.</p>';
+}
+
+document.getElementById('cat-search').addEventListener('input', e => renderCategories(e.target.value));
+renderCategories();
+
+/* ── Render OWASP table ─────────────────────────────────────────── */
+const sevClass = { critical: 'sev-critical', high: 'sev-high', medium: 'sev-medium' };
+document.getElementById('owasp-tbody').innerHTML = OWASP.map(r => `
+  <tr>
+    <td><span class="owasp-id">${r.id}</span></td>
+    <td>${r.vuln}</td>
+    <td><code>${r.module}</code></td>
+    <td><span class="severity-badge ${sevClass[r.sev]}">${r.sev.toUpperCase()}</span></td>
+  </tr>
+`).join('');
+
+/* ── Tab switching ──────────────────────────────────────────────── */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ── Copy code ──────────────────────────────────────────────────── */
+function copyCode(btn) {
+  const pre = btn.parentElement.querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+/* ── Animated counters ──────────────────────────────────────────── */
+function animateCounters() {
+  document.querySelectorAll('[data-target]').forEach(el => {
+    const target = +el.dataset.target;
+    const suffix = el.dataset.target === '100' ? '' : '+';
+    const step = Math.ceil(target / 40);
+    let cur = 0;
+    const timer = setInterval(() => {
+      cur = Math.min(cur + step, target);
+      el.textContent = cur + (cur === target && el.textContent.includes('%') ? '%' : (cur === target ? suffix : ''));
+      if (cur >= target) clearInterval(timer);
+    }, 35);
+  });
+}
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { animateCounters(); observer.disconnect(); } });
+}, { threshold: .3 });
+observer.observe(document.querySelector('.stats'));
+
+/* ── Contact form ───────────────────────────────────────────────── */
+function submitContact() {
+  const name  = document.getElementById('contact-name').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  const msg   = document.getElementById('contact-msg').value.trim();
+
+  if (!msg) { alert('Please enter a message.'); return; }
+
+  const subject = encodeURIComponent('API-Hacking Framework — Question from ' + (name || 'a user'));
+  const body    = encodeURIComponent(
+    (name  ? 'Name: '  + name  + '\n' : '') +
+    (email ? 'Email: ' + email + '\n' : '') +
+    '\n' + msg
+  );
+  window.location.href = `mailto:lysophavin18@github.com?subject=${subject}&body=${body}`;
+  document.getElementById('form-success').style.display = 'block';
+}
+</script>
+
+</body>
+</html>
