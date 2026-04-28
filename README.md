@@ -1,5 +1,10 @@
 # 🔐  API Penetration Testing Framework
 
+[![Website](https://img.shields.io/badge/Website-Live-blue?style=flat-square&logo=github)](https://lysophavin18.github.io/API-Hacking/)
+[![GitHub Pages](https://img.shields.io/github/deployments/lysophavin18/API-Hacking/github-pages?label=GitHub%20Pages&style=flat-square)](https://lysophavin18.github.io/API-Hacking/)
+
+🌐 **Live Website:** [lysophavin18.github.io/API-Hacking](https://lysophavin18.github.io/API-Hacking/)
+
 Complete automation framework for API security testing, vulnerability detection, and exploitation.
 
 ## 🎯 Overview
